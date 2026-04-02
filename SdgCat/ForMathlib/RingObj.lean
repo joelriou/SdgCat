@@ -1,4 +1,5 @@
 import Mathlib.CategoryTheory.Monoidal.Cartesian.Ring
+import Mathlib.CategoryTheory.Monoidal.Cartesian.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
 -- Ring objects: #36913, #37167, #37265, #37263
@@ -15,12 +16,17 @@ instance : HasForget₂ RingCat.{w} AddGrpCat.{w} where
       map f := AddGrpCat.ofHom
         { toFun := f.hom, map_zero' := by simp, map_add' := by simp } }
 
+instance : HasForget₂ RingCat.{w} AddMonCat.{w} where
+  forget₂ :=
+    { obj X := .of X
+      map f := AddMonCat.ofHom
+        { toFun := f.hom, map_zero' := by simp, map_add' := by simp } }
+
 instance : HasForget₂ RingCat.{w} MonCat.{w} where
   forget₂ :=
     { obj X := .of X
       map f := MonCat.ofHom
         { toFun := f.hom, map_one' := by simp, map_mul' := by simp } }
-
 
 open CartesianMonoidalCategory MonoidalCategory MonoidalClosed
 
@@ -136,30 +142,120 @@ end Obj
 
 section
 
-variable [CartesianMonoidalCategory C] [BraidedCategory C]
+variable [CartesianMonoidalCategory C]
+
+open MonObj
+
+namespace MonObj
+
+@[to_additive]
+abbrev ofRepresentableByHomMulEquiv
+    {M : C} {F : Cᵒᵖ ⥤ MonCat.{w}} (h : (F ⋙ forget _).RepresentableBy M)
+    {X : C} :
+    letI := MonObj.ofRepresentableBy M F h
+    (X ⟶ M) ≃* F.obj (op X) :=
+  letI := MonObj.ofRepresentableBy M F h
+  { toEquiv := h.homEquiv
+    map_mul' x y := by
+      dsimp [HMul.hMul, Mul.mul]
+      have h₁ := h.homEquiv_comp (lift x y) (fst _ _)
+      have h₂ := h.homEquiv_comp (lift x y) (snd _ _)
+      rw [lift_fst] at h₁
+      rw [lift_snd] at h₂
+      erw [h₁, h₂, h.homEquiv_comp, Equiv.apply_symm_apply]
+      apply (F.map (lift x y).op).hom.map_mul }
+
+end MonObj
+
+scoped[CategoryTheory.AddMonObj] attribute [instance] Hom.addMonoid
 
 namespace RingObj
 
+open AddMonObj
+
+lemma mul_add_iff (R : C) [MonObj R] [AddMonObj R] :
+    R ◁ σ ≫ μ = lift ((R ◁ fst _ _) ≫ μ) ((R ◁ snd _ _) ≫ μ) ≫ σ ↔
+      ∀ ⦃X : C⦄ (a b c : X ⟶ R), a * (b + c) = a * b + a * c := by
+  refine ⟨fun h _ a b c ↦ ?_, fun h ↦ ?_⟩
+  · have := lift a (lift b c) ≫= h
+    simp only [lift_whiskerLeft_assoc] at this
+    simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
+    congr 1
+    cat_disch
+  · replace h := h (fst R (R ⊗ R)) (snd _ _ ≫ fst _ _) (snd _ _ ≫ snd _ _)
+    simp only [Hom.mul_def, Hom.add_def] at h
+    convert h using 2
+    · cat_disch
+    · ext
+      · simp only [lift_fst]
+        congr 1
+        cat_disch
+      · simp only [lift_snd]
+        congr 1
+        cat_disch
+
+lemma add_mul_iff (R : C) [MonObj R] [AddMonObj R] :
+    σ ▷ R ≫ μ = lift (fst _ _ ▷ _ ≫ μ) (snd _ _ ▷ _ ≫ μ) ≫ σ ↔
+      ∀ ⦃X : C⦄ (a b c : X ⟶ R), (a + b) * c = a * c + b * c := by
+  refine ⟨fun h _ a b c ↦ ?_, fun h ↦ ?_⟩
+  · have := lift (lift a b) c ≫= h
+    simp only [lift_whiskerRight_assoc] at this
+    simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
+    congr 1
+    cat_disch
+  · replace h := h (fst (R ⊗ R) R ≫ fst _ _) (fst _ _ ≫ snd _ _) (snd _ _)
+    simp only [Hom.mul_def, Hom.add_def] at h
+    convert h using 2
+    · cat_disch
+    · ext
+      · simp only [lift_fst]
+        congr 1
+        cat_disch
+      · simp only [lift_snd]
+        congr 1
+        cat_disch
+
+attribute [to_additive] IsCommMonObj.ofRepresentableBy
+
 @[reducible]
-def ofRepresentableBy (X : C) (F : Cᵒᵖ ⥤ RingCat.{w})
-    (h : (F ⋙ forget _).RepresentableBy X) :
-    RingObj X :=
-  letI := AddGrpObj.ofRepresentableBy X (F ⋙ forget₂ _ _) h
-  letI := MonObj.ofRepresentableBy X (F ⋙ forget₂ _ _) h
-  { mul_add := sorry
-    add_mul := sorry
-    add_comm := sorry }
+def ofRepresentableBy [BraidedCategory C] (R : C) (F : Cᵒᵖ ⥤ RingCat.{w})
+    (h : (F ⋙ forget _).RepresentableBy R) :
+    RingObj R :=
+  letI := AddGrpObj.ofRepresentableBy R (F ⋙ forget₂ _ _) h
+  letI := MonObj.ofRepresentableBy R (F ⋙ forget₂ _ _) h
+  letI e {X : C} : (X ⟶ R) ≃ F.obj (op X) := h.homEquiv
+  have map_mul {X : C} (x y : X ⟶ R) : e (x * y) = e x * e y :=
+    (MonObj.ofRepresentableByHomMulEquiv (F := F ⋙ forget₂ _ _) h).map_mul x y
+  have map_add {X : C} (x y : X ⟶ R) : e (x + y) = e x + e y :=
+    (AddMonObj.ofRepresentableByHomAddEquiv (F := F ⋙ forget₂ _ _) h).map_add x y
+  have : IsCommAddMonObj R := by
+    rw [isCommAddMonObj_iff_isAddCommutative]
+    refine fun X ↦ ⟨⟨fun x y ↦ e.injective (by rw [map_add, map_add, add_comm])⟩⟩
+  { mul_add := by
+      rw [mul_add_iff]
+      intro X a b c
+      exact e.injective (by simp only [map_mul, map_add, LeftDistribClass.left_distrib])
+    add_mul := by
+      rw [add_mul_iff]
+      intro X a b c
+      exact e.injective (by simp only [map_mul, map_add, RightDistribClass.right_distrib]) }
 
 end RingObj
 
 namespace CommRingObj
 
 @[reducible]
-def ofRepresentableBy (X : C) (F : Cᵒᵖ ⥤ CommRingCat.{w})
-    (h : (F ⋙ forget _).RepresentableBy X) :
-    CommRingObj X :=
-  letI := RingObj.ofRepresentableBy X (F ⋙ forget₂ _ _) h
-  { mul_comm := sorry }
+def ofRepresentableBy [BraidedCategory C] (R : C) (F : Cᵒᵖ ⥤ CommRingCat.{w})
+    (h : (F ⋙ forget _).RepresentableBy R) :
+    CommRingObj R :=
+  letI := RingObj.ofRepresentableBy R (F ⋙ forget₂ _ _) h
+  have : IsCommMonObj R := by
+    rw [isCommMonObj_iff_isMulCommutative]
+    refine fun X ↦ ⟨⟨fun x y ↦ ?_⟩⟩
+    let e : (X ⟶ R) ≃* F.obj (op X) :=
+      MonObj.ofRepresentableByHomMulEquiv (F := F ⋙ forget₂ _ RingCat ⋙ forget₂ _ _) h (X := X)
+    exact e.injective (by rw [e.map_mul, e.map_mul, mul_comm])
+  { }
 
 end CommRingObj
 
