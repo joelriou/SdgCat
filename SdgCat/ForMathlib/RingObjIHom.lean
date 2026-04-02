@@ -102,6 +102,17 @@ def ihom.swapEquiv {X Y Z : C} [Closed X] [Closed Y] :
   left_inv _ := by simp
   right_inv _ := by simp
 
+variable [CartesianMonoidalCategory D] [SymmetricCategory D]
+lemma ihom.swap'_eq_swap {X Y Z : D} [Closed X] [Closed Y] (f : X ⟶ Y ⟶[D] Z) :
+    swap' f = swap f := by
+  simp [swap, swap', SymmetricCategory.braiding_swap_eq_inv_braiding]
+
+@[simp]
+lemma ihom.swap_swap {X Y Z : D} [Closed X] [Closed Y]
+    (f : X ⟶ Y ⟶[D] Z) :
+    swap (swap f) = f := by
+  simp [← ihom.swap'_eq_swap f]
+
 end MonoidalClosed
 
 namespace MonObj
@@ -374,6 +385,15 @@ noncomputable def homEquiv {X : C} [Closed X] :
     fun ⟨φ, hφ⟩ ↦ by
       obtain ⟨ψ, rfl⟩ := exists_lift_iff.2 hφ
       exact ⟨ψ, rfl⟩⟩
+
+variable {R₁ R₂} in
+noncomputable def homEquiv' {X : C} [Closed X] :
+    (X ⟶ RingObj.ihom R₁ R₂) ≃ (Rng.mk R₁ ⟶ Rng.mk (X ⟶[C] R₂)) :=
+  homEquiv.trans
+    { toFun := fun ⟨f, _⟩ ↦ { hom := ihom.swap f }
+      invFun f := ⟨ihom.swap f.hom, by simpa using f.isRingHom⟩
+      left_inv _ := by aesop
+      right_inv _ := by aesop }
 
 end ihom
 
