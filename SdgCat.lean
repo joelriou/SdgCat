@@ -1,2 +1,9 @@
-import SdgCat.Basic
+import SdgCat.DualNumber
+import SdgCat.ForMathlib.DualNumber
+import SdgCat.ForMathlib.Ideal
+import SdgCat.ForMathlib.Limits
+import SdgCat.ForMathlib.RingObj
+import SdgCat.ForMathlib.RingObjIHom
+import SdgCat.SDG
 import SdgCat.Spec
+import SdgCat.Tensor
