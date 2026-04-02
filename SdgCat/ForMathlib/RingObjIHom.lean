@@ -168,6 +168,7 @@ lemma swap_comp_ihomMapMul₀ :
     ← braiding_inv_comp_whiskerRight_comp_braiding_hom_assoc,
     ← braiding_swap_eq_inv_braiding, symmetry_assoc]
 
+omit [MonObj M₁] in
 @[to_additive (attr := simp)]
 lemma swap_comp_ihomMapMul₁ :
     ihom.swap (φ ≫ ihomMapMul₁ M₁ M₂) = (ihom.swap φ ⊗ₘ ihom.swap φ) ≫ μ[X ⟶[C] M₂] := by
@@ -176,13 +177,42 @@ lemma swap_comp_ihomMapMul₁ :
   rw [uncurry_curry, uncurry_natural_left, uncurry_natural_left, uncurry_natural_left,
     uncurry_natural_left, uncurry_natural_left, uncurry_ihom_map, uncurry_ihom_map]
   dsimp; simp only [← Category.assoc]; congr 1; simp only [Category.assoc]
+  have : (curry (β_ X M₁).hom ⊗ₘ curry (β_ X M₁).hom) ≫
+    Functor.LaxMonoidal.μ (ihom X) _ _ =
+      curry (lift (lift (snd _ _ ≫ fst _ _) (fst _ _))
+        (lift (snd _ _ ≫ snd _ _) (fst _ _))) := by
+    rw [← cancel_mono (Functor.OplaxMonoidal.δ (ihom X) _ _),
+      Category.assoc, Functor.Monoidal.μ_δ, Category.comp_id]
+    ext : 1
+    · rw [tensorHom_fst, Category.assoc, Functor.OplaxMonoidal.δ_fst,
+        ← curry_natural_right, ← curry_natural_left]
+      congr 1
+      cat_disch
+    · rw [tensorHom_snd, Category.assoc, Functor.OplaxMonoidal.δ_snd,
+        ← curry_natural_right, ← curry_natural_left]
+      congr 1
+      cat_disch
   rw [← whiskerLeft_comp_assoc, comp_lift, Category.comp_id,
     ihom.whiskerLeft_tensor_comp_ev_app]
+  rw [curry_natural_right, ← tensorHom_comp_tensorHom, whiskerLeft_comp_assoc]
+  nth_rw 2 [← whiskerLeft_comp_assoc]
+  rw [Functor.LaxMonoidal.μ_natural]
+  rw [whiskerLeft_comp_assoc]
+  rw [dsimp% ihom.ev_naturality]
+  rw [← whiskerLeft_comp_assoc, this]
   ext : 1
-  · simp
-    sorry
-  · simp
-    sorry
+  · simp only [Category.assoc]
+    rw [tensorHom_fst, tensorHom_fst, tensorμ_fst_assoc, tensorHom_def'_assoc,
+      ← whiskerLeft_comp_assoc, lift_fst,
+      whisker_exchange_assoc, ← dsimp% uncurry_eq]
+    simp only [← Category.assoc]; congr 1
+    cat_disch
+  · simp only [Category.assoc]
+    rw [tensorHom_snd, tensorHom_snd, tensorμ_snd_assoc, tensorHom_def'_assoc,
+      ← whiskerLeft_comp_assoc, lift_snd,
+      whisker_exchange_assoc, ← dsimp% uncurry_eq]
+    simp only [← Category.assoc]; congr 1
+    cat_disch
 
 omit [Closed (M₁ ⊗ M₁)] in
 @[to_additive]
