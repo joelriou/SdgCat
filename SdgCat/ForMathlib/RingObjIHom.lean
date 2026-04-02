@@ -58,12 +58,21 @@ def ihomHomRingEquiv [BraidedCategory C]
 
 namespace MonoidalClosed
 
-variable [BraidedCategory C]
-
 def ihom.tensor (X₁ X₂ Y₁ Y₂ : C) [Closed X₁] [Closed X₂] [Closed (X₁ ⊗ X₂)] :
     (X₁ ⟶[C] Y₁) ⊗ (X₂ ⟶[C] Y₂) ⟶ ((X₁ ⊗ X₂) ⟶[C] (Y₁ ⊗ Y₂)) :=
   curry (lift ((fst _ _ ⊗ₘ fst _ _) ≫ (ihom.ev X₁).app Y₁)
     ((snd _ _ ⊗ₘ snd _ _) ≫ (ihom.ev X₂).app Y₂))
+
+variable [BraidedCategory C]
+
+@[reassoc]
+lemma ihom.whiskerLeft_tensor_comp_ev_app
+    (X₁ X₂ Y₁ Y₂ : C) [Closed X₁] [Closed X₂] [Closed (X₁ ⊗ X₂)] :
+    dsimp% (X₁ ⊗ X₂) ◁ ihom.tensor X₁ X₂ Y₁ Y₂ ≫ (ihom.ev (X₁ ⊗ X₂)).app (Y₁ ⊗ Y₂) =
+      tensorμ _ _ _ _ ≫ ((ihom.ev X₁).app Y₁ ⊗ₘ (ihom.ev X₂).app Y₂) := by
+  dsimp [tensor]
+  rw [dsimp% MonoidalClosed.whiskerLeft_curry_ihom_ev_app]
+  cat_disch
 
 def ihom.swap {X Y Z : C} [Closed X] [Closed Y] (f : X ⟶ Y ⟶[C] Z) :
     Y ⟶ X ⟶[C] Z :=
@@ -167,8 +176,13 @@ lemma swap_comp_ihomMapMul₁ :
   rw [uncurry_curry, uncurry_natural_left, uncurry_natural_left, uncurry_natural_left,
     uncurry_natural_left, uncurry_natural_left, uncurry_ihom_map, uncurry_ihom_map]
   dsimp; simp only [← Category.assoc]; congr 1; simp only [Category.assoc]
-  rw [← whiskerLeft_comp_assoc, comp_lift, Category.comp_id]
-  sorry
+  rw [← whiskerLeft_comp_assoc, comp_lift, Category.comp_id,
+    ihom.whiskerLeft_tensor_comp_ev_app]
+  ext : 1
+  · simp
+    sorry
+  · simp
+    sorry
 
 omit [Closed (M₁ ⊗ M₁)] in
 @[to_additive]

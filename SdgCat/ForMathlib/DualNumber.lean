@@ -5,8 +5,6 @@ import Mathlib.RingTheory.Polynomial.Quotient
 
 namespace DualNumber
 
-def equiv {R : Type*} : R[ε] ≃ R × R := Equiv.refl _
-
 -- #37049
 @[ext]
 theorem ringHom_ext {R A : Type*} [CommRing A] [CommRing R]
@@ -59,6 +57,36 @@ lemma ringHom_algebraMap_apply (f : A →+* B) (a : A) :
 lemma ringHom_eps (f : A →+* B) : ringHom f ε = ε := by
   letI := f.toAlgebra
   apply lift_apply_eps
+
+@[simp] lemma add_fst (a b : A[ε]) : (a + b).1 = a.1 + b.1 := rfl
+@[simp] lemma add_snd (a b : A[ε]) : (a + b).2 = a.2 + b.2 := rfl
+@[simp] lemma mul_fst (a b : A[ε]) : (a * b).1 = a.1 * b.1 := rfl
+@[simp] lemma mul_snd (a b : A[ε]) : (a * b).2 = a.1 * b.2 + a.2 * b.1 := rfl
+@[simp] lemma eps_fst : (ε : A[ε]).1 = 0 := rfl
+@[simp] lemma eps_snd : (ε : A[ε]).2 = 1 := rfl
+
+@[simp] lemma algebraMap_eps_snd (a : A) : (algebraMap A A[ε] a).2 = 0 := rfl
+
+@[elab_as_elim]
+lemma rec {motive : A[ε] → Prop}
+    (h : ∀ (x y : A), motive (x • 1 + y • eps))
+    (a : A[ε]) : motive a := by
+  obtain ⟨x, y, rfl⟩ : ∃ (x : A) (y : A), a = x • 1 + y • eps :=
+    ⟨a.1, a.2, by aesop⟩
+  exact h _ _
+
+@[simp]
+lemma ringHom_apply_fst (f : A →+* B) (a : A[ε]) :
+    (ringHom f a).1 = f a.1 := by
+  induction a using DualNumber.rec with
+  | h x y => simp [Algebra.smul_def]; rfl
+
+@[simp]
+lemma ringHom_apply_snd (f : A →+* B) (a : A[ε]) :
+    (ringHom f a).2 = f a.2 := by
+  induction a using DualNumber.rec with
+  | h x y => simp [Algebra.smul_def]; rfl
+
 
 variable (A) in
 lemma ringHom_id :
