@@ -2,7 +2,7 @@ import Mathlib.CategoryTheory.Monoidal.Cartesian.Ring
 import Mathlib.CategoryTheory.Monoidal.Cartesian.CommGrp_
 import Mathlib.CategoryTheory.Monoidal.Closed.Cartesian
 
--- Ring objects: #36913, #37167, #37265, #37263
+-- Ring objects: #36913, #37167, #37265, #37263, #37587
 
 open Opposite
 

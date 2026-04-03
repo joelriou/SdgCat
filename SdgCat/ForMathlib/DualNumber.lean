@@ -5,7 +5,7 @@ import Mathlib.RingTheory.Polynomial.Quotient
 
 namespace DualNumber
 
--- #37049
+/- #37049
 @[ext]
 theorem ringHom_ext {R A : Type*} [CommRing A] [CommRing R]
     {f g : R[ε] →+* A} (h₀ : f.comp (algebraMap R R[ε]) = g.comp (algebraMap R R[ε]))
@@ -19,7 +19,7 @@ theorem ringHom_ext {R A : Type*} [CommRing A] [CommRing R]
     { toRingHom := g
       commutes' r := (DFunLike.congr_fun h₀ r).symm }
   have : φ₁ = φ₂ := algHom_ext hε
-  exact congr_arg AlgHom.toRingHom this
+  exact congr_arg AlgHom.toRingHom this-/
 
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
