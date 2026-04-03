@@ -1,5 +1,5 @@
 import SdgCat.ForMathlib.DualNumber
-import SdgCat.ForMathlib.RingObj
+import SdgCat.Tensor
 
 open Opposite
 
@@ -18,16 +18,18 @@ open DualNumber
 
 attribute [local simp] ringHom_id ringHom_comp in
 @[simps obj map]
-def yonedaDualNumber : Cᵒᵖ ⥤ CommRingCat.{v} where
+protected def dualNumber.yoneda : Cᵒᵖ ⥤ CommRingCat.{v} where
   obj X := .of (X.unop ⟶ R)[ε]
   map f := CommRingCat.ofHom (DualNumber.ringHom ((yonedaCommRingObj R).map f).hom)
 
 def dualNumber := R ⊗ R
 
+namespace dualNumber
+
 set_option backward.isDefEq.respectTransparency false in
 open CartesianMonoidalCategory in
-def representableByYonedaDualNumber :
-    (yonedaDualNumber R ⋙ forget CommRingCat).RepresentableBy (dualNumber R) where
+def representableBy :
+    (dualNumber.yoneda R ⋙ forget CommRingCat).RepresentableBy (dualNumber R) where
   homEquiv {X} := homEquivToProd
   homEquiv_comp {X Y} f g := by
     dsimp
@@ -35,7 +37,30 @@ def representableByYonedaDualNumber :
     apply Prod.ext <;> cat_disch
 
 instance : CommRingObj (dualNumber R) :=
-  CommRingObj.ofRepresentableBy _ _ (representableByYonedaDualNumber R)
+  CommRingObj.ofRepresentableBy _ _ (representableBy R)
+
+-- this should be part of the `CommRingObj.ofRepresentableBy` API
+variable {R} in
+def ringEquiv {X : C} : (X ⟶ dualNumber R) ≃+* (X ⟶ R)[ε] where
+  toEquiv := (representableBy R).homEquiv
+  map_mul' := sorry
+  map_add' := sorry
+
+end dualNumber
+
+def toDualNumber : R ⟶ dualNumber R := dualNumber.ringEquiv.symm 1
+
+instance : IsRingHom (toDualNumber R) := sorry
+
+namespace dualNumber
+
+def ringHom : ℤ[ε] →+* (𝟙_ C ⟶ dualNumber R) :=
+  AlgHom.toRingHom (DualNumber.lift
+    (⟨⟨Algebra.algHom ℤ _ _, ringEquiv.symm ε⟩, by simp [← map_mul]⟩))
+
+def tensorCommRingCore : TensorCommRingCore (toDualNumber R) (ringHom R) := sorry
+
+end dualNumber
 
 end CommRingObj
 
