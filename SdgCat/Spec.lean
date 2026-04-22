@@ -38,12 +38,12 @@ the presheaf which sends `X : C` to `A →+* (X ⟶ R)`. -/
 @[simps obj map]
 def yonedaSpec : Cᵒᵖ ⥤ Type max v w where
   obj X := A →+* (X.unop ⟶ R)
-  map f g := ((yonedaRingObj R).map f).hom.comp g
+  map f := TypeCat.ofHom (fun g ↦ ((yonedaRingObj R).map f).hom.comp g)
 
 @[simps]
 def yonedaSpecFunctor : CommRingCat.{w}ᵒᵖ ⥤ Cᵒᵖ ⥤ Type max v w where
   obj A := yonedaSpec R A.unop
-  map φ := { app X g := g.comp φ.unop.hom }
+  map φ := { app X := TypeCat.ofHom (fun g ↦ g.comp φ.unop.hom) }
 
 abbrev HasSpec := (yonedaSpec R A).IsRepresentable
 
@@ -83,7 +83,7 @@ noncomputable def isoSpecOfRepresentableBy {Y : C}
 
 variable {A} in
 noncomputable def Spec.eval (a : A) : Spec R A ⟶ R :=
-  yoneda.preimage { app X f := yonedaSpecHomEquiv f a }
+  yoneda.preimage { app X := TypeCat.ofHom (fun f ↦ yonedaSpecHomEquiv f a) }
 
 variable {A} in
 @[reassoc]

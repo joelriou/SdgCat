@@ -7,6 +7,7 @@ universe w v u
 namespace CategoryTheory
 
 open CartesianMonoidalCategory MonoidalCategory MonObj Limits
+--open scoped RingObj
 
 variable {C : Type u} [Category.{v} C] [CartesianMonoidalCategory C] [SymmetricCategory C]
   (R : C) [CommRingObj R] (A : Type w) [CommRing A]
@@ -17,11 +18,12 @@ variable (C) in
 @[simps]
 def yonedaTensorCommRing : CommRng C ⥤ Type max w v where
   obj T := A →+* (𝟙_ C ⟶ T.X)
-  map {T₁ T₂} f φ := ((yonedaCommRing.map f).app _).hom.comp φ
+  map {T₁ T₂} f :=
+    TypeCat.ofHom (fun φ ↦ ((yonedaCommRing.map f).app _).hom.comp φ)
 
 def yonedaCommRingObjTensorCommRing : CommRng C ⥤ Type max w v where
   obj T := (CommRng.mk R ⟶ T) × (A →+* (𝟙_ C ⟶ T.X))
-  map f x := ⟨x.1 ≫ f, (yonedaTensorCommRing C A).map f x.2⟩
+  map f := TypeCat.ofHom (fun x ↦ ⟨x.1 ≫ f, (yonedaTensorCommRing C A).map f x.2⟩)
 
 variable {R' : C} [CommRingObj R']
 

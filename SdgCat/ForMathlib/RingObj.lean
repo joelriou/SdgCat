@@ -173,48 +173,6 @@ namespace RingObj
 
 open AddMonObj
 
-lemma mul_add_iff (R : C) [MonObj R] [AddMonObj R] :
-    R ◁ σ ≫ μ = lift ((R ◁ fst _ _) ≫ μ) ((R ◁ snd _ _) ≫ μ) ≫ σ ↔
-      ∀ ⦃X : C⦄ (a b c : X ⟶ R), a * (b + c) = a * b + a * c := by
-  refine ⟨fun h _ a b c ↦ ?_, fun h ↦ ?_⟩
-  · have := lift a (lift b c) ≫= h
-    simp only [lift_whiskerLeft_assoc] at this
-    simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
-    congr 1
-    cat_disch
-  · replace h := h (fst R (R ⊗ R)) (snd _ _ ≫ fst _ _) (snd _ _ ≫ snd _ _)
-    simp only [Hom.mul_def, Hom.add_def] at h
-    convert h using 2
-    · cat_disch
-    · ext
-      · simp only [lift_fst]
-        congr 1
-        cat_disch
-      · simp only [lift_snd]
-        congr 1
-        cat_disch
-
-lemma add_mul_iff (R : C) [MonObj R] [AddMonObj R] :
-    σ ▷ R ≫ μ = lift (fst _ _ ▷ _ ≫ μ) (snd _ _ ▷ _ ≫ μ) ≫ σ ↔
-      ∀ ⦃X : C⦄ (a b c : X ⟶ R), (a + b) * c = a * c + b * c := by
-  refine ⟨fun h _ a b c ↦ ?_, fun h ↦ ?_⟩
-  · have := lift (lift a b) c ≫= h
-    simp only [lift_whiskerRight_assoc] at this
-    simp only [Hom.add_def, Hom.mul_def, this, ← Category.assoc]
-    congr 1
-    cat_disch
-  · replace h := h (fst (R ⊗ R) R ≫ fst _ _) (fst _ _ ≫ snd _ _) (snd _ _)
-    simp only [Hom.mul_def, Hom.add_def] at h
-    convert h using 2
-    · cat_disch
-    · ext
-      · simp only [lift_fst]
-        congr 1
-        cat_disch
-      · simp only [lift_snd]
-        congr 1
-        cat_disch
-
 attribute [to_additive] IsCommMonObj.ofRepresentableBy
 
 @[reducible]
