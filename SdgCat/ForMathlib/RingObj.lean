@@ -8,7 +8,97 @@ open Opposite
 
 universe w v u
 
+@[mk_iff]
+structure IsAddMonoidHom {R₁ R₂ : Type*} [AddMonoid R₁] [AddMonoid R₂] (f : R₁ → R₂) : Prop where
+  map_zero : f 0 = 0
+  map_add (x y : R₁) : f (x + y) = f x + f y
+
+@[to_additive, mk_iff]
+structure IsMonoidHom {R₁ R₂ : Type*} [Monoid R₁] [Monoid R₂] (f : R₁ → R₂) : Prop where
+  map_one : f 1 = 1
+  map_mul (x y : R₁) : f (x * y) = f x * f y
+
+attribute [to_additive existing] isMonoidHom_iff
+
+lemma isAddMonoidHom_comp_iff_of_injective
+    {R₁ R₂ R₃ : Type*} [AddMonoid R₁] [AddMonoid R₂] [AddMonoid R₃] (f : R₁ → R₂) (e : R₂ →+ R₃)
+    (he : Function.Injective e) :
+    IsAddMonoidHom (e ∘ f) ↔ IsAddMonoidHom f := by
+  simp [isAddMonoidHom_iff, ← he.eq_iff]
+
+@[to_additive existing]
+lemma isMonoidHom_comp_iff_of_injective
+    {R₁ R₂ R₃ : Type*} [Monoid R₁] [Monoid R₂] [Monoid R₃] (f : R₁ → R₂) (e : R₂ →* R₃)
+    (he : Function.Injective e) :
+    IsMonoidHom (e ∘ f) ↔ IsMonoidHom f := by
+  simp [isMonoidHom_iff, ← he.eq_iff]
+
+@[mk_iff]
+structure IsRingHom {R₁ R₂ : Type*} [Ring R₁] [Ring R₂] (f : R₁ → R₂)
+  extends IsMonoidHom f, IsAddMonoidHom f
+
+lemma isRingHom_comp_iff_of_injective
+    {R₁ R₂ R₃ : Type*} [Ring R₁] [Ring R₂] [Ring R₃] (f : R₁ → R₂) (e : R₂ →+* R₃)
+    (he : Function.Injective e) :
+    IsRingHom (e ∘ f) ↔ IsRingHom f := by
+  simp [isRingHom_iff, ← isMonoidHom_comp_iff_of_injective f e.toMonoidHom he,
+    ← isAddMonoidHom_comp_iff_of_injective f e.toAddMonoidHom he]
+
+lemma RingHom.isRingHom {R₁ R₂ : Type*} [Ring R₁] [Ring R₂] (f : R₁ →+* R₂) : IsRingHom f where
+  map_one := by simp
+  map_zero := by simp
+  map_mul := by simp
+  map_add := by simp
+
 namespace CategoryTheory
+
+open CartesianMonoidalCategory MonoidalCategory MonoidalClosed
+
+variable {C D : Type*} [Category* C] [Category* D]
+  [CartesianMonoidalCategory C] [CartesianMonoidalCategory D]
+
+section
+
+open MonObj RingObj
+
+attribute [mk_iff] CategoryTheory.IsMonHom CategoryTheory.IsAddMonHom CategoryTheory.IsRingHom
+
+attribute [to_additive existing] CategoryTheory.isMonHom_iff
+
+@[to_additive]
+lemma map_one_iff {M₁ M₂ : C} [MonObj M₁] [MonObj M₂] (f : M₁ ⟶ M₂) :
+    η ≫ f = η ↔ ∀ (X : C), (1 : X ⟶ M₁) ≫ f = 1 := by
+  simp only [Hom.one_def, Category.assoc]
+  refine ⟨fun hf ↦ ?_, fun hf ↦ ?_⟩
+  · simp [hf]
+  · rw [← cancel_epi (𝟙 _), Subsingleton.elim (𝟙 _) (toUnit (𝟙_ C)), hf]
+
+@[to_additive]
+lemma map_mul_iff {M₁ M₂ : C} [MonObj M₁] [MonObj M₂] (f : M₁ ⟶ M₂) :
+    μ ≫ f = (f ⊗ₘ f) ≫ μ ↔ ∀ ⦃X : C⦄ (x y : X ⟶ M₁), (x * y) ≫ f = (x ≫ f) * (y ≫ f) := by
+  simp only [Hom.mul_def, Category.assoc]
+  refine ⟨fun hf X x y ↦ ?_, fun hf ↦ ?_⟩
+  · simpa using lift x y ≫= hf
+  · simpa using hf (fst M₁ M₁) (snd M₁ M₁)
+
+@[to_additive]
+lemma isMonHom_iff_yoneda {M₁ M₂ : C} [MonObj M₁] [MonObj M₂] (f : M₁ ⟶ M₂) :
+    IsMonHom f ↔ ∀ (X : C),
+      _root_.IsMonoidHom (R₁ := X ⟶ M₁) (R₂ := X ⟶ M₂) ((yoneda.map f).app (op X)) := by
+  simp only [isMonHom_iff, _root_.isMonoidHom_iff, map_one_iff, map_mul_iff, forall_and,
+    yoneda_map_app, yoneda_obj_obj, TypeCat.hom_ofHom, TypeCat.Fun.coe_mk]
+
+variable [BraidedCategory C]
+
+lemma isRingHom_iff_yoneda {R₁ R₂ : C} [RingObj R₁] [RingObj R₂] (f : R₁ ⟶ R₂) :
+    IsRingHom f ↔ ∀ (X : C),
+      _root_.IsRingHom (R₁ := X ⟶ R₁) (R₂ := X ⟶ R₂) ((yoneda.map f).app (op X)) := by
+  simp only [isRingHom_iff, _root_.isRingHom_iff, isMonHom_iff_yoneda,
+    isAddMonHom_iff_yoneda, forall_and]
+  tauto
+
+end
+
 
 instance : HasForget₂ RingCat.{w} AddGrpCat.{w} where
   forget₂ :=
@@ -28,17 +118,11 @@ instance : HasForget₂ RingCat.{w} MonCat.{w} where
       map f := MonCat.ofHom
         { toFun := f.hom, map_one' := by simp, map_mul' := by simp } }
 
-open CartesianMonoidalCategory MonoidalCategory MonoidalClosed
-
-variable {C D : Type*} [Category* C] [Category* D]
-
 namespace Obj
 
 open MonObj
 
-variable [CartesianMonoidalCategory C] [CartesianMonoidalCategory D] (F : C ⥤ D)
-
-variable [BraidedCategory C] [BraidedCategory D]
+variable (F : C ⥤ D) [BraidedCategory C] [BraidedCategory D]
 
 noncomputable instance (X : C) [Closed X] : (ihom X).Braided := .ofChosenFiniteProducts _
 
@@ -140,8 +224,6 @@ instance (X : C) [Closed X] (M : C) [RingObj M] : IsRingHom (MonoidalClosed.curr
 
 end Obj
 
-section
-
 variable [CartesianMonoidalCategory C]
 
 open MonObj
@@ -235,7 +317,5 @@ abbrev ofRepresentableByHomRingEquiv [BraidedCategory C]
   RingObj.ofRepresentableByHomRingEquiv (F := F ⋙ forget₂ _ _) h
 
 end CommRingObj
-
-end
 
 end CategoryTheory

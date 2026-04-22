@@ -48,9 +48,23 @@ end dualNumber
 
 def toDualNumber : R ⟶ dualNumber R := dualNumber.ringEquiv.symm 1
 
-instance : IsRingHom (toDualNumber R) := sorry
-
 namespace dualNumber
+
+include R in
+@[simp]
+lemma ringEquiv_comp_toDualNumber {X : C} (r : X ⟶ R) :
+    ringEquiv (r ≫ toDualNumber R) =
+      algebraMap (X ⟶ R) (X ⟶ R)[ε] r := by
+  sorry
+
+instance : IsRingHom (toDualNumber R) := by
+  rw [isRingHom_iff_yoneda]
+  intro X
+  rw [← isRingHom_comp_iff_of_injective _ dualNumber.ringEquiv.toRingHom
+    (by exact dualNumber.ringEquiv.injective)]
+  convert (algebraMap (X ⟶ R) (X ⟶ R)[ε]).isRingHom
+  aesop
+
 
 def ringHom : ℤ[ε] →+* (𝟙_ C ⟶ dualNumber R) :=
   AlgHom.toRingHom (DualNumber.lift
