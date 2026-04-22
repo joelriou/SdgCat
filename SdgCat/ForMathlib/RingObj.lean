@@ -198,6 +198,18 @@ def ofRepresentableBy [BraidedCategory C] (R : C) (F : Cᵒᵖ ⥤ RingCat.{w})
       intro X a b c
       exact e.injective (by simp only [map_mul, map_add, RightDistribClass.right_distrib]) }
 
+open scoped AddMonObj MonObj RingObj
+
+abbrev ofRepresentableByHomRingEquiv [BraidedCategory C]
+    {R : C} {F : Cᵒᵖ ⥤ RingCat.{w}} (h : (F ⋙ forget _).RepresentableBy R)
+    {X : C} :
+    letI := RingObj.ofRepresentableBy R F h
+    (X ⟶ R) ≃+* F.obj (op X) :=
+  letI := RingObj.ofRepresentableBy R F h
+  { toEquiv := h.homEquiv
+    map_add' := (AddMonObj.ofRepresentableByHomAddEquiv (F := F ⋙ forget₂ _ _) h).map_add
+    map_mul' := (MonObj.ofRepresentableByHomMulEquiv (F := F ⋙ forget₂ _ _) h).map_mul }
+
 end RingObj
 
 namespace CommRingObj
@@ -214,6 +226,13 @@ def ofRepresentableBy [BraidedCategory C] (R : C) (F : Cᵒᵖ ⥤ CommRingCat.{
       MonObj.ofRepresentableByHomMulEquiv (F := F ⋙ forget₂ _ RingCat ⋙ forget₂ _ _) h (X := X)
     exact e.injective (by rw [e.map_mul, e.map_mul, mul_comm])
   { }
+
+abbrev ofRepresentableByHomRingEquiv [BraidedCategory C]
+    {R : C} {F : Cᵒᵖ ⥤ CommRingCat.{w}} (h : (F ⋙ forget _).RepresentableBy R)
+    {X : C} :
+    letI := CommRingObj.ofRepresentableBy R F h
+    (X ⟶ R) ≃+* F.obj (op X) :=
+  RingObj.ofRepresentableByHomRingEquiv (F := F ⋙ forget₂ _ _) h
 
 end CommRingObj
 

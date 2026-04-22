@@ -41,10 +41,8 @@ instance : CommRingObj (dualNumber R) :=
 
 -- this should be part of the `CommRingObj.ofRepresentableBy` API
 variable {R} in
-def ringEquiv {X : C} : (X ⟶ dualNumber R) ≃+* (X ⟶ R)[ε] where
-  toEquiv := (representableBy R).homEquiv
-  map_mul' := sorry
-  map_add' := sorry
+def ringEquiv {X : C} : (X ⟶ dualNumber R) ≃+* (X ⟶ R)[ε] :=
+  CommRingObj.ofRepresentableByHomRingEquiv (representableBy R)
 
 end dualNumber
 
