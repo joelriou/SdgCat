@@ -21,6 +21,7 @@ def yonedaTensorCommRing : CommRng C ⥤ Type max w v where
   map {T₁ T₂} f :=
     TypeCat.ofHom (fun φ ↦ ((yonedaCommRing.map f).app _).hom.comp φ)
 
+@[simps]
 def yonedaCommRingObjTensorCommRing : CommRng C ⥤ Type max w v where
   obj T := (CommRng.mk R ⟶ T) × (A →+* (𝟙_ C ⟶ T.X))
   map f := TypeCat.ofHom (fun x ↦ ⟨x.1 ≫ f, (yonedaTensorCommRing C A).map f x.2⟩)

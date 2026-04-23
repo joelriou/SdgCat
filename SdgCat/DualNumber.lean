@@ -5,6 +5,14 @@ open Opposite
 
 universe w v u
 
+namespace DualNumber
+
+variable {R : Type*} [CommRing R]
+
+def intRingHomEquiv : (ℤ[ε] →+* R) ≃ { x : R // x^2 = 0 } := sorry
+
+end DualNumber
+
 namespace CategoryTheory
 
 open CartesianMonoidalCategory MonoidalCategory MonObj Limits
@@ -75,10 +83,15 @@ instance : IsRingHom (toDualNumber R) := by
   aesop
 
 def ringHom : ℤ[ε] →+* (𝟙_ C ⟶ dualNumber R) :=
-  AlgHom.toRingHom (DualNumber.lift
-    (⟨⟨Algebra.algHom ℤ _ _, ringEquiv.symm ε⟩, by simp [← map_mul]⟩))
+  intRingHomEquiv.symm ⟨ringEquiv.symm ε, ringEquiv.injective (by simp)⟩
 
-def tensorCommRingCore : TensorCommRingCore (toDualNumber R) (ringHom R) := sorry
+def tensorCommRingCore : TensorCommRingCore (toDualNumber R) (ringHom R) where
+  corepresentableBy :=
+    { homEquiv {S} := by
+        refine Equiv.trans ?_ (Equiv.prodCongr (.refl _) intRingHomEquiv.symm)
+        sorry
+      homEquiv_comp := sorry }
+  homEquiv_id_eq := sorry
 
 end dualNumber
 
