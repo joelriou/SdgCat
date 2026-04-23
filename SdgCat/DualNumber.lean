@@ -52,18 +52,25 @@ lemma ringEquiv_comp {X Y : C} (f : X ⟶ Y) (g : Y ⟶ dualNumber R) :
 
 end dualNumber
 
-def toDualNumber : R ⟶ dualNumber R := dualNumber.ringEquiv.symm 1
+def toDualNumber : R ⟶ dualNumber R :=
+  dualNumber.ringEquiv.symm (𝟙 R • 1)
 
 namespace dualNumber
 
+set_option backward.isDefEq.respectTransparency false in
 include R in
 @[simp]
 lemma ringEquiv_comp_toDualNumber {X : C} (r : X ⟶ R) :
     ringEquiv (r ≫ toDualNumber R) =
       algebraMap (X ⟶ R) (X ⟶ R)[ε] r := by
   dsimp [toDualNumber]
-  rw [ringEquiv_comp, map_one, map_one, Algebra.algebraMap_eq_smul_one]
-  sorry
+  rw [ringEquiv_comp]
+  dsimp
+  rw [RingEquiv.apply_symm_apply, ringHom_smul_one,
+    Algebra.algebraMap_eq_smul_one]
+  congr 1
+  change _ ≫ _ = _
+  simp
 
 instance : IsRingHom (toDualNumber R) := by
   rw [isRingHom_iff_yoneda]
