@@ -43,6 +43,13 @@ variable {R} in
 def ringEquiv {X : C} : (X ⟶ dualNumber R) ≃+* (X ⟶ R)[ε] :=
   CommRingObj.ofRepresentableByHomRingEquiv (representableBy R)
 
+variable {R} in
+lemma ringEquiv_comp {X Y : C} (f : X ⟶ Y) (g : Y ⟶ dualNumber R) :
+    ringEquiv (f ≫ g) =
+      DualNumber.ringHom ((yonedaCommRingObj R).map f.op).hom
+        (ringEquiv g) :=
+  (representableBy R).homEquiv_comp _ _
+
 end dualNumber
 
 def toDualNumber : R ⟶ dualNumber R := dualNumber.ringEquiv.symm 1
@@ -54,6 +61,8 @@ include R in
 lemma ringEquiv_comp_toDualNumber {X : C} (r : X ⟶ R) :
     ringEquiv (r ≫ toDualNumber R) =
       algebraMap (X ⟶ R) (X ⟶ R)[ε] r := by
+  dsimp [toDualNumber]
+  rw [ringEquiv_comp, map_one, map_one, Algebra.algebraMap_eq_smul_one]
   sorry
 
 instance : IsRingHom (toDualNumber R) := by
