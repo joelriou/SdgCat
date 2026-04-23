@@ -63,14 +63,8 @@ include R in
 lemma ringEquiv_comp_toDualNumber {X : C} (r : X ⟶ R) :
     ringEquiv (r ≫ toDualNumber R) =
       algebraMap (X ⟶ R) (X ⟶ R)[ε] r := by
-  dsimp [toDualNumber]
-  rw [ringEquiv_comp]
-  dsimp
-  rw [RingEquiv.apply_symm_apply, ringHom_smul_one,
+  simp [toDualNumber, ringEquiv_comp, yonedaCommRingObj, yonedaRingObj,
     Algebra.algebraMap_eq_smul_one]
-  congr 1
-  change _ ≫ _ = _
-  simp
 
 instance : IsRingHom (toDualNumber R) := by
   rw [isRingHom_iff_yoneda]
@@ -79,7 +73,6 @@ instance : IsRingHom (toDualNumber R) := by
     (by exact dualNumber.ringEquiv.injective)]
   convert (algebraMap (X ⟶ R) (X ⟶ R)[ε]).isRingHom
   aesop
-
 
 def ringHom : ℤ[ε] →+* (𝟙_ C ⟶ dualNumber R) :=
   AlgHom.toRingHom (DualNumber.lift
