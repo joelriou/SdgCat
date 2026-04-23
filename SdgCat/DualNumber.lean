@@ -39,7 +39,6 @@ def representableBy :
 instance : CommRingObj (dualNumber R) :=
   CommRingObj.ofRepresentableBy _ _ (representableBy R)
 
--- this should be part of the `CommRingObj.ofRepresentableBy` API
 variable {R} in
 def ringEquiv {X : C} : (X ⟶ dualNumber R) ≃+* (X ⟶ R)[ε] :=
   CommRingObj.ofRepresentableByHomRingEquiv (representableBy R)
