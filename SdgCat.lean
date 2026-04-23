@@ -1,5 +1,6 @@
 import SdgCat.DualNumber
 import SdgCat.ForMathlib.DualNumber
+import SdgCat.ForMathlib.FunctorEquiv
 import SdgCat.ForMathlib.Ideal
 import SdgCat.ForMathlib.Limits
 import SdgCat.ForMathlib.RingObj
