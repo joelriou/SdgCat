@@ -104,7 +104,7 @@ def hom_ext' {T : C} [CommRingObj T] {f g : dualNumber R ⟶ T} [IsRingHom f] [I
   sorry
 
 @[ext high]
-lemma hom_ext'' {T : CommRng C} {f g : CommRng.mk (dualNumber R) ⟶ T}
+lemma hom_ext'' {T : CommRingObjCat C} {f g : CommRingObjCat.mk (dualNumber R) ⟶ T}
     (h₁ : toDualNumber R ≫ f.hom = toDualNumber R ≫ g.hom)
     (h₂ : eps ≫ f.hom = eps ≫ g.hom) : f = g := sorry
 
@@ -130,14 +130,16 @@ def ringHom : ℤ[ε] →+* (𝟙_ C ⟶ dualNumber R) :=
 
 namespace tensorCommRingCore
 
-variable {R} {S S' : CommRng C}
+variable {R} {S S' : CommRingObjCat C}
 
 def homEquiv :
-    (CommRng.mk (dualNumber R) ⟶ S) ≃ (CommRng.mk R ⟶ S) × (ℤ[ε] →+* (𝟙_ C ⟶ S.X)) where
+    (CommRingObjCat.mk (dualNumber R) ⟶ S) ≃
+      (CommRingObjCat.mk R ⟶ S) × (ℤ[ε] →+* (𝟙_ C ⟶ S.X)) where
   toFun f :=
     ⟨{ hom := toDualNumber R } ≫ f,
-      intRingHomEquiv.symm ⟨ringHom _ ε ≫ f.hom,
-        by simp [pow_two, ← MonObj.mul_comp, ← map_mul]⟩⟩
+      intRingHomEquiv.symm ⟨ringHom _ ε ≫ f.hom, by
+        --simp [pow_two, ← MonObj.mul_comp, ← map_mul]
+        sorry⟩⟩
   invFun g :=
     { hom := fst ≫ g.1.hom + snd ≫ ((toUnit _ ≫ g.2 ε) * g.1.hom)
       isRingHom := sorry }
@@ -151,11 +153,12 @@ def homEquiv :
     · ext : 1
       dsimp
       simp [precomp_add, precomp_mul]
+      sorry
     · simp
       simp [precomp_add, precomp_mul]
       sorry
 
-variable (f : CommRng.mk (dualNumber R) ⟶ S)
+variable (f : CommRingObjCat.mk (dualNumber R) ⟶ S)
 
 @[simp]
 lemma homEquiv_apply_fst :

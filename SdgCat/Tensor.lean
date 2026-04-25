@@ -16,14 +16,14 @@ namespace CommRingObj
 
 variable (C) in
 @[simps]
-def yonedaTensorCommRing : CommRng C ⥤ Type max w v where
+def yonedaTensorCommRing : CommRingObjCat C ⥤ Type max w v where
   obj T := A →+* (𝟙_ C ⟶ T.X)
   map {T₁ T₂} f :=
     TypeCat.ofHom (fun φ ↦ ((yonedaCommRing.map f).app _).hom.comp φ)
 
 @[simps]
-def yonedaCommRingObjTensorCommRing : CommRng C ⥤ Type max w v where
-  obj T := (CommRng.mk R ⟶ T) × (A →+* (𝟙_ C ⟶ T.X))
+def yonedaCommRingObjTensorCommRing : CommRingObjCat C ⥤ Type max w v where
+  obj T := (CommRingObjCat.mk R ⟶ T) × (A →+* (𝟙_ C ⟶ T.X))
   map f := TypeCat.ofHom (fun x ↦ ⟨x.1 ≫ f, (yonedaTensorCommRing C A).map f x.2⟩)
 
 variable {R' : C} [CommRingObj R']

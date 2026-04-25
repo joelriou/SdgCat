@@ -13,12 +13,14 @@ variable {C D : Type*} [Category* C] [Category* D]
 
 variable [CartesianMonoidalCategory C]
 
-open Obj MonObj
+open Obj MonObj RingObj
 
 @[to_additive]
 lemma precomp_mul {M X Y : C} [MonObj M] (x y : Y ⟶ M) (f : X ⟶ Y) :
     f ≫ (x * y) = (f ≫ x) * (f ≫ y) :=
   ((yonedaMonObj M).map f.op).hom.map_mul x y
+
+open scoped AddMonObj Obj RingObj
 
 @[to_additive]
 lemma curry_mul {M X Y : C} [MonObj M] [Closed X] (x y : X ⊗ Y ⟶ M) :
@@ -388,7 +390,7 @@ noncomputable def homEquiv {X : C} [Closed X] :
 
 variable {R₁ R₂} in
 noncomputable def homEquiv' {X : C} [Closed X] :
-    (X ⟶ RingObj.ihom R₁ R₂) ≃ (Rng.mk R₁ ⟶ Rng.mk (X ⟶[C] R₂)) :=
+    (X ⟶ RingObj.ihom R₁ R₂) ≃ (RingObjCat.mk R₁ ⟶ RingObjCat.mk (X ⟶[C] R₂)) :=
   homEquiv.trans
     { toFun := fun ⟨f, _⟩ ↦ { hom := ihom.swap f }
       invFun f := ⟨ihom.swap f.hom, by simpa using f.isRingHom⟩
@@ -405,7 +407,7 @@ variable [SymmetricCategory C]
 
 variable (R : C) [CommRingObj R]
 
-abbrev Alg := Under (CommRng.mk R)
+abbrev Alg := Under (CommRingObjCat.mk R)
 
 namespace Alg
 

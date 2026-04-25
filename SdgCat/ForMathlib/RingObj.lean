@@ -124,6 +124,12 @@ open MonObj
 
 variable (F : C ⥤ D) [BraidedCategory C] [BraidedCategory D]
 
+-- to be moved...
+noncomputable instance (X : C) [Closed X] : (ihom X).IsRightAdjoint :=
+  (ihom.adjunction X).isRightAdjoint
+
+noncomputable instance (X : C) [Closed X] : (ihom X).Monoidal := .ofChosenFiniteProducts _
+
 noncomputable instance (X : C) [Closed X] : (ihom X).Braided := .ofChosenFiniteProducts _
 
 variable [F.Braided]
