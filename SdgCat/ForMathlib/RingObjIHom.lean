@@ -20,6 +20,11 @@ lemma precomp_mul {M X Y : C} [MonObj M] (x y : Y ⟶ M) (f : X ⟶ Y) :
     f ≫ (x * y) = (f ≫ x) * (f ≫ y) :=
   ((yonedaMonObj M).map f.op).hom.map_mul x y
 
+@[to_additive]
+lemma precomp_one {M X Y : C} [MonObj M] (f : X ⟶ Y) :
+    f ≫ (1 : Y ⟶ M) = 1 :=
+  ((yonedaMonObj M).map f.op).hom.map_one
+
 open scoped AddMonObj Obj RingObj
 
 @[to_additive]
