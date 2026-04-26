@@ -13,19 +13,7 @@ variable {C D : Type*} [Category* C] [Category* D]
 
 variable [CartesianMonoidalCategory C]
 
-open Obj MonObj RingObj
-
-@[to_additive]
-lemma precomp_mul {M X Y : C} [MonObj M] (x y : Y ⟶ M) (f : X ⟶ Y) :
-    f ≫ (x * y) = (f ≫ x) * (f ≫ y) :=
-  ((yonedaMonObj M).map f.op).hom.map_mul x y
-
-@[to_additive]
-lemma precomp_one {M X Y : C} [MonObj M] (f : X ⟶ Y) :
-    f ≫ (1 : Y ⟶ M) = 1 :=
-  ((yonedaMonObj M).map f.op).hom.map_one
-
-open scoped AddMonObj Obj RingObj
+open scoped MonObj AddMonObj Obj RingObj
 
 @[to_additive]
 lemma curry_mul {M X Y : C} [MonObj M] [Closed X] (x y : X ⊗ Y ⟶ M) :
@@ -48,7 +36,7 @@ lemma curry_mul {M X Y : C} [MonObj M] [Closed X] (x y : X ⊗ Y ⟶ M) :
 @[to_additive]
 lemma curry'_mul {M X : C} [MonObj M] [Closed X] (x y : X ⟶ M) :
     curry' (x * y) = curry' x * curry' y := by
-  simp [curry', precomp_mul, curry_mul]
+  simp [curry', MonObj.comp_mul, curry_mul]
 
 @[to_additive]
 noncomputable def ihomMulHomEquiv (M X : C) [MonObj M] [Closed X] :

@@ -145,17 +145,17 @@ def homEquiv :
       isRingHom := sorry }
   left_inv f := by
     ext
-    · simp [precomp_add, precomp_mul]
-    · simp [precomp_add, precomp_mul]
+    · simp [AddMonObj.comp_add, MonObj.comp_mul]
+    · simp [AddMonObj.comp_add, MonObj.comp_mul]
       sorry
   right_inv g := by
     ext : 1
     · ext : 1
       dsimp
-      simp [precomp_add, precomp_mul]
+      simp [AddMonObj.comp_add, MonObj.comp_mul]
       sorry
     · simp
-      simp [precomp_add, precomp_mul]
+      simp [AddMonObj.comp_add, MonObj.comp_mul]
       sorry
 
 variable (f : CommRingObjCat.mk (dualNumber R) ⟶ S)
