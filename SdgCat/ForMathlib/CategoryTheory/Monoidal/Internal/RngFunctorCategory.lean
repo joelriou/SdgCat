@@ -2,6 +2,8 @@ import Mathlib.CategoryTheory.Monoidal.Ring
 import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 
+set_option linter.style.header false
+
 /-!
 # `RingObjCat (C ⥤ D) ≌ C ⥤ RingObjCat D`
 
@@ -196,4 +198,3 @@ def rngFunctorCategoryEquivalence : RingObjCat (C ⥤ D) ≌ C ⥤ RingObjCat D 
   counitIso := counitIso
 
 end CategoryTheory.Monoidal
-

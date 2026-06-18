@@ -3,6 +3,8 @@ import Mathlib.RingTheory.FinitePresentation
 import SdgCat.ForMathlib.Ideal
 import SdgCat.ForMathlib.RingObjIHom
 
+set_option linter.style.header false
+
 open Opposite
 
 universe w v u

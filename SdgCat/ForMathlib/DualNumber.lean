@@ -3,6 +3,8 @@ import Mathlib.Algebra.DualNumber
 import Mathlib.RingTheory.FinitePresentation
 import Mathlib.RingTheory.Polynomial.Quotient
 
+set_option linter.style.header false
+
 namespace DualNumber
 
 /- #37049

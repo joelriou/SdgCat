@@ -2,6 +2,8 @@ import Mathlib.CategoryTheory.Monoidal.Grp
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 
+set_option linter.style.header false
+
 /-!
 # `Grp (C ⥤ D) ≌ C ⥤ Grp D`
 

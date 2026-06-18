@@ -1,5 +1,7 @@
 import SdgCat.ForMathlib.RingObj
 
+set_option linter.style.header false
+
 open Opposite
 
 universe w v u

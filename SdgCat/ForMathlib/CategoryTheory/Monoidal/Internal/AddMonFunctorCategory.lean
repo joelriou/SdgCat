@@ -1,5 +1,7 @@
 import Mathlib.CategoryTheory.Monoidal.Internal.FunctorCategory
 
+set_option linter.style.header false
+
 /-!
 # `AddMon (C ⥤ D) ≌ C ⥤ AddMon D`
 
@@ -110,4 +112,3 @@ def addMonFunctorCategoryEquivalence : AddMon (C ⥤ D) ≌ C ⥤ AddMon D where
   counitIso := counitIso
 
 end CategoryTheory.Monoidal
-

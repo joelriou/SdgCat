@@ -3,6 +3,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.WideEqualizers
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.Data.Finite.Sum
 
+set_option linter.style.header false
+
 universe w v u
 
 namespace CategoryTheory.Limits

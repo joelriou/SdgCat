@@ -1,4 +1,10 @@
 import SdgCat.DualNumber
+import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.AddGrpFunctorCategory
+import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.AddMonFunctorCategory
+import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.CommRngFunctorCategory
+import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.GrpFunctorCategory
+import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.MonFunctorCategory
+import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.RngFunctorCategory
 import SdgCat.ForMathlib.DualNumber
 import SdgCat.ForMathlib.FunctorEquiv
 import SdgCat.ForMathlib.Ideal

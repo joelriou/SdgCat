@@ -2,6 +2,8 @@ import Mathlib.CategoryTheory.Monoidal.Grp
 import Mathlib.CategoryTheory.Monoidal.Cartesian.FunctorCategory
 import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.AddMonFunctorCategory
 
+set_option linter.style.header false
+
 /-!
 # `AddGrp (C ⥤ D) ≌ C ⥤ AddGrp D`
 
@@ -169,4 +171,3 @@ def addGrpFunctorCategoryEquivalence : AddGrp (C ⥤ D) ≌ C ⥤ AddGrp D where
   counitIso := counitIso
 
 end CategoryTheory.Monoidal
-

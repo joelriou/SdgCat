@@ -2,6 +2,8 @@ import SdgCat.ForMathlib.DualNumber
 import SdgCat.ForMathlib.RingObjIHom
 import SdgCat.Tensor
 
+set_option linter.style.header false
+
 open Opposite
 
 universe w v u
