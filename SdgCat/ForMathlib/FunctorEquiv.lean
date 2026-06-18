@@ -8,6 +8,7 @@ import Mathlib.Algebra.Category.Grp.Limits
 import Mathlib.CategoryTheory.Monoidal.Internal.Types.Grp
 import Mathlib.CategoryTheory.ObjectProperty.Equivalence
 import Mathlib.CategoryTheory.Sites.CartesianMonoidal
+import Mathlib.CategoryTheory.Monoidal.Subcategory
 import SdgCat.ForMathlib.CategoryTheory.Monoidal.Internal.GrpFunctorCategory
 
 /-!
@@ -44,19 +45,26 @@ def ObjectProperty.grp : ObjectProperty (Grp C) := P.inverseImage (Grp.forget C)
 @[simp]
 lemma ObjectProperty.grp_iff (G : Grp C) : P.grp G ↔ P G.X := Iff.rfl
 
-variable [P.IsClosedUnderLimitsOfShape (Discrete PEmpty)]
+variable [P.IsClosedUnderLimitsOfShape (Discrete PEmpty.{1})]
   [P.IsClosedUnderLimitsOfShape (Discrete WalkingPair)]
 
 namespace Grp.FullSubcategoryEquivalence
 
-instance : P.ι.Monoidal := Functor.CoreMonoidal.toMonoidal
-  { εIso := Iso.refl _
-    μIso := fun _ _ => Iso.refl _ }
+open Limits in
+instance : P.IsMonoidal where
+  prop_unit :=
+    P.prop_of_isLimit SemiCartesianMonoidalCategory.isTerminalTensorUnit (by rintro ⟨⟨⟩⟩)
+  prop_tensor X Y hX hY :=
+    P.prop_of_isLimit (CartesianMonoidalCategory.tensorProductIsBinaryProduct X Y) (by
+      rintro ⟨_ | _⟩ <;> assumption)
+
+-- why?
+set_option backward.isDefEq.respectTransparency false
 
 abbrev inverseObj (G : P.grp.FullSubcategory) : Grp P.FullSubcategory := by
   let X : P.FullSubcategory := ⟨G.obj.X, G.property⟩
   haveI : GrpObj (P.ι.obj X) := G.obj.grp
-  haveI : GrpObj X := (ObjectProperty.fullyFaithfulι (P := P)).grpObj X
+  haveI : GrpObj X := (ObjectProperty.fullyFaithfulι P).grpObj X
   exact ⟨X⟩
 
 private lemma mapObjIso_one (G : P.grp.FullSubcategory) :
